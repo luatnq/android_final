@@ -43,7 +43,11 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:30.0.1')
     implementation 'com.firebaseui:firebase-ui-database:8.0.1'
     implementation 'com.google.firebase:firebase-database'
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    implementation 'com.github.bumptech.glide:glide:4.13.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.0'
+    implementation 'com.github.esafirm:android-image-picker:3.0.0-beta5'
+
+    implementation 'io.github.sangcomz:fishbun:1.0.0-beta01'
 
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'de.hdodenhof:circleimageview:3.1.0'

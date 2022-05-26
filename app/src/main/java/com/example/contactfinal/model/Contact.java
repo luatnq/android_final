@@ -2,6 +2,8 @@ package com.example.contactfinal.model;
 
 public class Contact {
 
+    private String key;
+
     private String firstName;
 
     private String lastName;
@@ -12,7 +14,7 @@ public class Contact {
 
     private String phoneNumber;
 
-    private String imageBytes;
+    private String imageUrl;
 
 
     public Contact() {
@@ -26,21 +28,39 @@ public class Contact {
         this.phoneNumber = phoneNumber;
     }
 
-    public Contact(String firstName, String lastName, String email, String address, String phoneNumber, String imageBytes) {
+    public Contact(String firstName, String lastName, String email, String address, String phoneNumber, String imageUrl) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.imageBytes = imageBytes;
+        this.imageUrl = imageUrl;
     }
 
-    public String getImageBytes() {
-        return imageBytes;
+    public Contact(String key, String firstName, String lastName, String email, String address, String phoneNumber, String imageUrl) {
+        this.key = key;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.imageUrl = imageUrl;
     }
 
-    public void setImageBytes(String imageBytes) {
-        this.imageBytes = imageBytes;
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getFirstName() {

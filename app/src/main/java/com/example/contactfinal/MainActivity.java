@@ -1,29 +1,27 @@
 package com.example.contactfinal;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.SearchView;
+import android.widget.Button;
 
 
 import com.example.contactfinal.activities.AddContact;
+import com.example.contactfinal.activities.UpdateContact;
 import com.example.contactfinal.adapter.ContactAdapter;
-import com.example.contactfinal.databinding.ActivityMainBinding;
 import com.example.contactfinal.model.Contact;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -49,6 +47,23 @@ public class MainActivity extends AppCompatActivity {
                 .setLifecycleOwner(this)
                 .setQuery(databaseReference,
                         Contact.class).build();
+        System.out.println("==========key======" + databaseReference.child("Contact").push().getKey());
+
+//        Query query = databaseReference.child("Contact");
+//        query.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for (DataSnapshot child : dataSnapshot.getChildren()) {
+//                    String key = child.getKey();
+//                    System.out.println("============"+key);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
 
         adapter = new ContactAdapter(options);
         recyclerView.setAdapter(adapter);

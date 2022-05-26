@@ -15,6 +15,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -22,12 +24,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
+import com.esafirm.imagepicker.features.ImagePicker;
+import com.esafirm.imagepicker.features.ImagePickerLauncher;
+import com.esafirm.imagepicker.model.Image;
+import com.example.contactfinal.MainActivity;
 import com.example.contactfinal.dao.ContactDAO;
 import com.example.contactfinal.databinding.AddContactBinding;
 import com.example.contactfinal.model.Contact;
+import com.sangcomz.fishbun.FishBun;
+import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter;
 
 import java.io.ByteArrayOutputStream;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class AddContact extends AppCompatActivity {
@@ -35,10 +46,8 @@ public class AddContact extends AppCompatActivity {
 
     private static final String TAG = "CONTACT_TAG";
     private static final int WRITE_CONTACT_PERMISSION_CODE = 100;
-    private static final int IMAGE_PICK_GALLERY_CODE = 100;
 
     private String[] contactPermissions;
-
     private Uri image_uri;
 
 
@@ -66,11 +75,18 @@ public class AddContact extends AppCompatActivity {
                 if (isWriteContactPermissionEnabled()) {
                     //permission already enabled, save contact
                     saveContact();
+                    finish();
                 } else {
                     //permission not enable, request
                     requestWriteContactPermission();
                 }
+            }
+        });
 
+        binding.btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
             }
         });
 
@@ -84,55 +100,7 @@ public class AddContact extends AppCompatActivity {
         String address = binding.address.getText().toString().trim();
         String email = binding.email.getText().toString().trim();
 
-        ArrayList<ContentProviderOperation> cpo = new ArrayList<>();
-        int rawContactId = cpo.size();
-
-        cpo.add(ContentProviderOperation.newInsert(
-                ContactsContract.RawContacts.CONTENT_URI)
-                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
-                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null).build());
-
-        //add First name, Last name
-        cpo.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, rawContactId)
-                .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, firstName)
-                .withValue(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, lastName).build());
-
-        //add phone number
-        cpo.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, rawContactId)
-                .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phoneNumber)
-                .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE).build());
-
-        //add email
-        cpo.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, rawContactId)
-                .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.Email.DATA, email)
-                .withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK).build());
-
-        //add address
-        cpo.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, rawContactId)
-                .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.SipAddress.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.SipAddress.DATA, address)
-                .withValue(ContactsContract.CommonDataKinds.SipAddress.TYPE, ContactsContract.CommonDataKinds.SipAddress.TYPE_WORK).build());
-
-        byte[] imageBytes = imageUriBytes();
-        if (imageBytes != null) {
-            //contact with image
-            //add image
-            cpo.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, rawContactId)
-                    .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO, imageBytes).build());
-        } else {
-            //contact without image
-        }
         try {
-            ContentProviderResult[] results = getContentResolver().applyBatch(ContactsContract.AUTHORITY, cpo);
             Log.d(TAG, "saveContact: Saved...");
 
             Contact contact = new Contact(firstName, lastName, email, address, phoneNumber, Objects.nonNull(image_uri) ? image_uri.toString() : null);
@@ -177,34 +145,22 @@ public class AddContact extends AppCompatActivity {
         }
     }
 
-    private byte[] imageUriBytes() {
-        Bitmap bitmap;
-        ByteArrayOutputStream baos = null;
-        try {
-            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), image_uri);
-
-            baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
-        } catch (Exception e) {
-            Log.d(TAG, "imageUriToBytes: " + e.getMessage());
-            return null;
-        }
-        return baos.toByteArray();
-    }
-
     private void openGalleryIntent() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, IMAGE_PICK_GALLERY_CODE);
+        FishBun.with(this).setImageAdapter(new GlideAdapter()).startAlbumWithOnActivityResult(12);
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
-            image_uri = data.getData();
 
-            binding.thumbnail.setImageURI(image_uri);
+            if (requestCode == 12) {
+
+                Glide.with(this).load(data.getParcelableArrayListExtra(FishBun.INTENT_PATH).get(0)).into(binding.thumbnail);
+                image_uri = (Uri) data.getParcelableArrayListExtra(FishBun.INTENT_PATH).get(0);
+            }
         } else {
             Toast.makeText(this, "Cancelled...", Toast.LENGTH_SHORT).show();
         }
