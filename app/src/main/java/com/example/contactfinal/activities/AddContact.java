@@ -30,8 +30,10 @@ import com.esafirm.imagepicker.features.ImagePickerLauncher;
 import com.esafirm.imagepicker.model.Image;
 import com.example.contactfinal.MainActivity;
 import com.example.contactfinal.dao.ContactDAO;
+import com.example.contactfinal.dao.ContactService;
 import com.example.contactfinal.databinding.AddContactBinding;
 import com.example.contactfinal.model.Contact;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.sangcomz.fishbun.FishBun;
 import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter;
 
@@ -49,6 +51,8 @@ public class AddContact extends AppCompatActivity {
 
     private String[] contactPermissions;
     private Uri image_uri;
+
+    FirebaseFirestore firebaseFirestore;
 
 
     @Override
@@ -95,7 +99,6 @@ public class AddContact extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void saveContact() {
         String firstName = binding.firstName.getText().toString().trim();
-        String lastName = binding.lastName.getText().toString().trim();
         String phoneNumber = binding.phoneNumber.getText().toString().trim();
         String address = binding.address.getText().toString().trim();
         String email = binding.email.getText().toString().trim();
@@ -103,9 +106,12 @@ public class AddContact extends AppCompatActivity {
         try {
             Log.d(TAG, "saveContact: Saved...");
 
-            Contact contact = new Contact(firstName, lastName, email, address, phoneNumber, Objects.nonNull(image_uri) ? image_uri.toString() : null);
+            Contact contact = new Contact(firstName, email, address, phoneNumber, Objects.nonNull(image_uri) ? image_uri.toString() : null);
             ContactDAO contactDAO = new ContactDAO();
             contactDAO.add(contact);
+
+            ContactService contactService = new ContactService();
+            contactService.add(contact);
 
             Toast.makeText(this, "Saved...", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {

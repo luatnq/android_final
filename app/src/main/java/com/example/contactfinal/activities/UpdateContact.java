@@ -109,7 +109,6 @@ public class UpdateContact extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void saveContact() {
         String firstName = binding.firstNameEdit.getText().toString().trim();
-        String lastName = binding.lastNameEdit.getText().toString().trim();
         String phoneNumber = binding.phoneNumberEdit.getText().toString().trim();
         String address = binding.addressEdit.getText().toString().trim();
         String email = binding.emailEdit.getText().toString().trim();
@@ -121,7 +120,6 @@ public class UpdateContact extends AppCompatActivity {
 
             HashMap<String, Object> hashMap = new HashMap<>();
             hashMap.put("firstName", firstName);
-            hashMap.put("lastName", lastName);
             hashMap.put("phoneNumber", phoneNumber);
             hashMap.put("address", address);
             hashMap.put("email", email);
@@ -188,7 +186,6 @@ public class UpdateContact extends AppCompatActivity {
     private void init(Intent intent) {
         thumbnailIv = findViewById(R.id.thumbnailEdit);
         firstName = findViewById(R.id.firstNameEdit);
-        lastName = findViewById(R.id.lastNameEdit);
         phoneNumber = findViewById(R.id.phoneNumberEdit);
         address = findViewById(R.id.addressEdit);
         email = findViewById(R.id.emailEdit);
@@ -196,7 +193,6 @@ public class UpdateContact extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
 
         firstName.setText(intent.getStringExtra("firstName"));
-        lastName.setText(intent.getStringExtra("lastName"));
         phoneNumber.setText(intent.getStringExtra("phoneNumber"));
         address.setText(intent.getStringExtra("address"));
         email.setText(intent.getStringExtra("email"));

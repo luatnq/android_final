@@ -1,5 +1,6 @@
 package com.example.contactfinal.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,9 +32,9 @@ public class ContactAdapter extends FirebaseRecyclerAdapter<Contact, ContactAdap
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull ContactViewHolder holder, int position, @NonNull Contact contact) {
+    protected void onBindViewHolder(@NonNull ContactViewHolder holder, @SuppressLint("RecyclerView") int position, @NonNull Contact contact) {
 
-        holder.fullName.setText(contact.getFirstName().concat(" ".concat(contact.getLastName())));
+        holder.fullName.setText(contact.getName().trim());
         holder.email.setText("" + contact.getEmail());
         holder.phoneNumber.setText(contact.getPhoneNumber());
 
@@ -80,8 +81,7 @@ public class ContactAdapter extends FirebaseRecyclerAdapter<Contact, ContactAdap
     }
 
     private void putData(Intent intent, Contact contact){
-        intent.putExtra("firstName", contact.getFirstName());
-        intent.putExtra("lastName", contact.getLastName());
+        intent.putExtra("firstName", contact.getName());
         intent.putExtra("phoneNumber", contact.getPhoneNumber());
         intent.putExtra("avatarUrl", contact.getImageUrl());
         intent.putExtra("email", contact.getEmail());
@@ -97,7 +97,7 @@ public class ContactAdapter extends FirebaseRecyclerAdapter<Contact, ContactAdap
 
     public class ContactViewHolder extends RecyclerView.ViewHolder {
         CircleImageView avatar;
-        TextView firstName, lastName, phoneNumber, email, address, fullName;
+        TextView firstName, phoneNumber, email, fullName;
         ImageView btnEdit, btnDelete;
 
         public ContactViewHolder(@NonNull View itemView) {
@@ -105,13 +105,10 @@ public class ContactAdapter extends FirebaseRecyclerAdapter<Contact, ContactAdap
             avatar = (CircleImageView) itemView.findViewById(R.id.avatar);
             fullName = (TextView) itemView.findViewById(R.id.contact_name);
             firstName = itemView.findViewById(R.id.firstName);
-            lastName = (TextView) itemView.findViewById(R.id.lastName);
             phoneNumber = (TextView) itemView.findViewById(R.id.contact_number);
             email = itemView.findViewById(R.id.contact_email);
             btnEdit =  itemView.findViewById(R.id.btn_edit);
             btnDelete = itemView.findViewById(R.id.btn_delete);
-
-
         }
     }
 }

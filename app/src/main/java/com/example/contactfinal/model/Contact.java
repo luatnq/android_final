@@ -4,9 +4,7 @@ public class Contact {
 
     private String key;
 
-    private String firstName;
-
-    private String lastName;
+    private String name;
 
     private String email;
 
@@ -20,27 +18,24 @@ public class Contact {
     public Contact() {
     }
 
-    public Contact(String firstName, String lastName, String email, String address, String phoneNumber) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Contact(String name,  String email, String address, String phoneNumber) {
+        this.name = name;
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;
     }
 
-    public Contact(String firstName, String lastName, String email, String address, String phoneNumber, String imageUrl) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Contact(String name, String email, String address, String phoneNumber, String imageUrl) {
+        this.name = name;
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.imageUrl = imageUrl;
     }
 
-    public Contact(String key, String firstName, String lastName, String email, String address, String phoneNumber, String imageUrl) {
+    public Contact(String key, String name, String email, String address, String phoneNumber, String imageUrl) {
         this.key = key;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.name = name;
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;
@@ -63,20 +58,12 @@ public class Contact {
         this.imageUrl = imageUrl;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {

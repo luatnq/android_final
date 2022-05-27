@@ -25,25 +25,13 @@
         android:textColor="#000"
         android:padding="10dp"
         android:layout_height="wrap_content"
-        android:hint="First Name"
+        android:hint="Name"
         android:inputType="textPersonName"/>
 
-    <EditText
-        android:id="@+id/lastNameEdit"
-        android:layout_below="@+id/firstNameEdit"
-        android:layout_width="match_parent"
-        android:background="#fff"
-        android:textColorHint="#c5c5c5"
-        android:layout_marginTop="10dp"
-        android:textColor="#000"
-        android:padding="10dp"
-        android:layout_height="wrap_content"
-        android:hint="Last Name"
-        android:inputType="textPersonName"/>
 
     <EditText
         android:id="@+id/phoneNumberEdit"
-        android:layout_below="@+id/lastNameEdit"
+        android:layout_below="@+id/firstNameEdit"
         android:layout_width="match_parent"
         android:background="#fff"
         android:textColorHint="#c5c5c5"

@@ -6,22 +6,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.SearchView;
 
 
 import com.example.contactfinal.activities.AddContact;
-import com.example.contactfinal.activities.UpdateContact;
 import com.example.contactfinal.adapter.ContactAdapter;
+import com.example.contactfinal.adapter.ContactAdapterFake;
+import com.example.contactfinal.dao.ContactService;
 import com.example.contactfinal.model.Contact;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -49,25 +48,11 @@ public class MainActivity extends AppCompatActivity {
                         Contact.class).build();
         System.out.println("==========key======" + databaseReference.child("Contact").push().getKey());
 
-//        Query query = databaseReference.child("Contact");
-//        query.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                for (DataSnapshot child : dataSnapshot.getChildren()) {
-//                    String key = child.getKey();
-//                    System.out.println("============"+key);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
 
         adapter = new ContactAdapter(options);
         recyclerView.setAdapter(adapter);
 
+        adapter.startListening();
         btnAdd = (FloatingActionButton) findViewById(R.id.btn_add);
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         adapter.startListening();
+        adapter.notifyDataSetChanged();
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -91,41 +78,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.searchmenu, menu);
-//
-//        MenuItem item = menu.findItem(R.id.search);
-//
-//        SearchView searchView = (SearchView) item.getActionView();
-//
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String s) {
-//
-//                processsearch(s);
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String s) {
-//                processsearch(s);
-//                return false;
-//            }
-//        });
-//
-//        return super.onCreateOptionsMenu(menu);
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.searchmenu, menu);
 
-//    private void processsearch(String s) {
-//        FirebaseRecyclerOptions<model> options =
-//                new FirebaseRecyclerOptions.Builder<model>()
-//                        .setQuery(FirebaseDatabase.getInstance().getReference().child("students").orderByChild("course").startAt(s).endAt(s + "\uf8ff"), model.class)
-//                        .build();
-//
-//        adapter = new myadapter(options);
-//        adapter.startListening();
-//        recview.setAdapter(adapter);
-//
-//    }
+        MenuItem item = menu.findItem(R.id.search);
+
+        SearchView searchView = (SearchView) item.getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+
+                processSearch(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                processSearch(s);
+                return false;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    private void processSearch(String name) {
+        FirebaseRecyclerOptions<Contact> options =
+                new FirebaseRecyclerOptions.Builder<Contact>()
+                        .setQuery(FirebaseDatabase.getInstance().getReference().child("Contact")
+                                .orderByChild("firstName").startAt(name).endAt(name + "\uf8ff"), Contact.class)
+                        .build();
+
+        adapter = new ContactAdapter(options);
+        adapter.startListening();
+        recyclerView.setAdapter(adapter);
+
+    }
 }
